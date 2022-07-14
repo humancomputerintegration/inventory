@@ -146,6 +146,7 @@ def deleteProduct(name):
     except:
         return "There was an issue while deleteing the Product"
 
+
 @app.route("/update-location/<name>", methods=["POST", "GET"])
 def updateLocation(name):
     location = Location.query.get_or_404(name)

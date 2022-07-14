@@ -14,10 +14,8 @@ class Product(db.Model):
     product_id      = db.Column(db.String(200), primary_key=True)
     product_info    = db.Column(db.String(200),nullable = False)
     date_created    = db.Column(db.DateTime, default=datetime.utcnow)
-    qty             = db.Column(db.Integer)
-    order_link      = db.Column(db.String(100000))
-
-
+    product_qty     = db.Column(db.Integer)
+    #order_link      = db.Column(db.String(100000))
 
 
     def __repr__(self):

@@ -13,12 +13,16 @@
             <li class="breadcrumb-item"><a href="/">Dashboard</a></li>
             <li class="breadcrumb-item active">Products</li>
         </ol>
+
         <div class="card mb-4">
             <div class="card-header">Products</div>
             <div class="card-body">
                 <div class="card mb-4">
                     <div class="card-header">New Product</div>
                     <div class="card-body">
+                        <form action="/products/" method="POST" id="product_search_form"></form>
+                            <input type="text" name="search_input" id= "search_info" placeholder="Search..">
+                            <input id="search" value="search" class="btn btn-primary">
                         <form action="/products/" method="POST" id="product_form">
                             <label for="product_name" class="col-form-label">Product Name</label>
                             <input type="text" name="product_name" id="product_name"><br>
@@ -28,6 +32,13 @@
                             
                             <label for="product_qty" class="col-form-label">Quantity</label>
                             <input type="text" name="product_qty" id="product_qty">
+
+                            <label for="order_trigger_qty" class="col-form-label">Trigger Quantity</label>
+                            <input type="text" name="order_trigger_qty" id="order_trigger_qty">
+
+                            <label for="order_url" class="col-form-label">Order URL</label>
+                            <input type="text" name="order_url" id="order_url">
+
                             <input id="submitProduct" value="Add Product" class="btn btn-primary">
                         </form>
                     </div>
@@ -68,7 +79,7 @@
                                     <td>{{ product.product_info }}</td>
                                     <td>
 					{{ product.product_qty }}<br>
-                                        <a href="/delete-nha/{{ product.product_id }}">+</a> /
+                                        <a href="/increase-qty/{{ product.product_id }}">+</a> /
                                         <a href="/decrease-qty/{{ product.product_id }}">-</a>
 				    </td>
                                     <td>{{ product.date_created.date() }}</td>

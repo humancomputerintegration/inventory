@@ -1,3 +1,4 @@
+import subprocess
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from collections import defaultdict
@@ -154,8 +155,8 @@ def decreaseQty(name):
     product_to_decrease.product_qty = product_to_decrease.product_qty - 1
     if product_to_decrease.product_qty <= 0:
         product_to_decrease.product_qty = 0
-    #if product_to_decrease.product_qty <= product_to_decrease.order_trigger_qty:
-        #subprocess.Popen(["open", product_to_decrease.order_url])
+    if product_to_decrease.product_qty <= product_to_decrease.order_trigger_qty:
+        subprocess.Popen(["open", product_to_decrease.order_url])
 
     try:
         #db.session.update(product_to_decrease)

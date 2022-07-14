@@ -24,6 +24,8 @@
                             <input type="text" name="product_name" id="product_name"><br>
                             <label for="product_info" class="col-form-label">Info</label>
                             <input type="text" name="product_info" id="product_info">
+                            <label for="product_qty" class="col-form-label">Quantity</label>
+                            <input type="text" name="product_qty" id="product_info">
                             <input id="submitProduct" value="Add Product" class="btn btn-primary">
                         </form>
                     </div>
@@ -41,16 +43,18 @@
                         <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                             <thead>
                                 <tr>
-                                    <th>Product Name</th>
-                                    <th>Product Info</th>
+                                    <th>Lab-thing</th>
+                                    <th>Info</th>
+                                    <th>Quantity</th>
                                     <th>Date</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
                             <tfoot>
                                 <tr>
-                                    <th>Product Name</th>
-                                    <th>Product Info</th>
+                                    <th>Lab-thing</th>
+                                    <th>Info</th>
+                                    <th>Quantity</th>
                                     <th>Date</th>
                                     <th>Actions</th>
                                 </tr>
@@ -60,6 +64,11 @@
                                 <tr>
                                     <td>{{ product.product_id }}</td>
                                     <td>{{ product.product_info }}</td>
+                                    <td>
+					{{ product.product_qty }}<br>
+                                        <a href="/delete-product/{{ product.product_id }}">+</a> /
+                                        <a href="/delete-product/{{ product.product_id }}">-</a>
+				    </td>
                                     <td>{{ product.date_created.date() }}</td>
                                     <td>
                                         <a href="/delete-product/{{ product.product_id }}">Delete</a>

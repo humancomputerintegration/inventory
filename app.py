@@ -9,13 +9,14 @@ db = SQLAlchemy(app)
 
 
 class Product(db.Model):
-
     __tablename__ = 'products'
-    product_id      = db.Column(db.String(200), primary_key=True)
-    product_info    = db.Column(db.String(200),nullable = False)
-    date_created    = db.Column(db.DateTime, default=datetime.utcnow)
-    product_qty     = db.Column(db.Integer)
-    #order_link      = db.Column(db.String(100000))
+    product_id   = db.Column(db.String(200), primary_key=True)
+    date_created = db.Column(db.DateTime, default=datetime.utcnow)
+    product_info = db.Column(db.String(100))
+    product_qty  = db.Column(db.Integer)
+    order_trigger_qty = db.Column(db.Integer)
+    order_url = db.Column(db.String(100000))
+
 
 
     def __repr__(self):
@@ -97,13 +98,13 @@ def viewLocation():
 
 @app.route('/products/', methods=["POST", "GET"])
 def viewProduct():
-    #if (request.method == "POST") and ('product_name' in request.form) and ('product_infoInput' in request.form):
     if (request.method == "POST") and ('product_name' in request.form):
         product_name = request.form["product_name"]
-        product_infoInput = request.form["product_info"]
-        product_qtyInput   = request.form["product_qty"]
-        new_product = Product(product_id=product_name, product_info=product_infoInput, product_qty=product_qtyInput)
-        #new_product = Product(product_id=product_name)
+        product_info = request.form["product_info"]
+        product_qty   = request.form["product_qty"]
+        order_trigger_qty   = request.form["order_trigger_qty"]
+        order_url  = request.form["order_url"]
+        new_product = Product(product_id=product_name, product_info=product_info, product_qty=product_qty, order_trigger_qty = order_trigger_qty, order_url=order_url)
 
         try:
             db.session.add(new_product)
@@ -137,6 +138,7 @@ def updateProduct(name):
 
 @app.route("/delete-product/<name>")
 def deleteProduct(name):
+    print("deleting" + str(name))
     product_to_delete = Product.query.get_or_404(name)
 
     try:
@@ -145,6 +147,37 @@ def deleteProduct(name):
         return redirect("/products/")
     except:
         return "There was an issue while deleteing the Product"
+
+@app.route("/decrease-qty/<name>")
+def decreaseQty(name):
+    product_to_decrease = Product.query.get_or_404(name)
+    product_to_decrease.product_qty = product_to_decrease.product_qty - 1
+    if product_to_decrease.product_qty <= 0:
+        product_to_decrease.product_qty = 0
+    #if product_to_decrease.product_qty <= product_to_decrease.order_trigger_qty:
+        #subprocess.Popen(["open", product_to_decrease.order_url])
+
+    try:
+        #db.session.update(product_to_decrease)
+        db.session.commit()
+        return redirect("/products/")
+    except:
+        return "There was an issue while decreasing the quantity"
+
+@app.route("/increase-qty/<name>")
+def increaseQty(name):
+    product_to_decrease = Product.query.get_or_404(name)
+    product_to_decrease.product_qty = product_to_decrease.product_qty + 1
+    #if product_to_decrease.product_qty <= product_to_decrease.order_trigger_qty:
+        #subprocess.Popen(["open", product_to_decrease.order_url])
+
+    try:
+        #db.session.update(product_to_decrease)
+        db.session.commit()
+        return redirect("/products/")
+    except:
+        return "There was an issue while decreasing the quantity"
+
 
 
 @app.route("/update-location/<name>", methods=["POST", "GET"])

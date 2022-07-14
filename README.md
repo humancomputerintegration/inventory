@@ -1,0 +1,2 @@
+# inventory
+lab inventory

@@ -101,8 +101,8 @@ def viewProduct():
     if (request.method == "POST") and ('product_name' in request.form):
         product_name = request.form["product_name"]
         product_infoInput = request.form["product_info"]
-        new_product = Product(product_id=product_name, product_info=product_infoInput, product_qty=product_qtyInput)
         product_qtyInput   = request.form["product_qty"]
+        new_product = Product(product_id=product_name, product_info=product_infoInput, product_qty=product_qtyInput)
         #new_product = Product(product_id=product_name)
 
         try:

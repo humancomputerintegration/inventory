@@ -21,7 +21,8 @@
                     <div class="card-body">
                         <form action="/products/" method="POST" id="product_form">
                             <label for="product_name" class="col-form-label">Product Name</label>
-                            <input type="text" name="product_name" id="product_name">
+                            <input type="text" name="product_name" id="product_name"><br>
+                            <label for="product_info" class="col-form-label">Info</label>
                             <input type="text" name="product_info" id="product_info">
                             <input id="submitProduct" value="Add Product" class="btn btn-primary">
                         </form>
@@ -41,6 +42,7 @@
                             <thead>
                                 <tr>
                                     <th>Product Name</th>
+                                    <th>Product Info</th>
                                     <th>Date</th>
                                     <th>Actions</th>
                                 </tr>
@@ -48,6 +50,7 @@
                             <tfoot>
                                 <tr>
                                     <th>Product Name</th>
+                                    <th>Product Info</th>
                                     <th>Date</th>
                                     <th>Actions</th>
                                 </tr>

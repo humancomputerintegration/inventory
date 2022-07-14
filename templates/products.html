@@ -22,6 +22,7 @@
                         <form action="/products/" method="POST" id="product_form">
                             <label for="product_name" class="col-form-label">Product Name</label>
                             <input type="text" name="product_name" id="product_name">
+                            <input type="text" name="product_info" id="product_info">
                             <input id="submitProduct" value="Add Product" class="btn btn-primary">
                         </form>
                     </div>
@@ -55,6 +56,7 @@
                                 {% for product in products %}
                                 <tr>
                                     <td>{{ product.product_id }}</td>
+                                    <td>{{ product.product_info }}</td>
                                     <td>{{ product.date_created.date() }}</td>
                                     <td>
                                         <a href="/delete-product/{{ product.product_id }}">Delete</a>

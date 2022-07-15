@@ -13,19 +13,18 @@ const char* password = "mpffmpff";  //"your-password";
 const char* host = "192.168.0.109";
 const int httpPort = 5000;
 char* url;
-char* url_d27 = "/decrease-qty/LED";
-char* url_d14 = "/increase-qty/LED";
 
 // Use WiFiClient class to create TCP connections
 WiFiClient client;
 
 struct Button {
     const uint8_t PIN;
-    bool pressed;
+    char* url;
 };
 
-Button button_decrease = {27, false};
-Button button_increase = {14, false};
+Button button_decrease = {27, "/decrease-qty/LED"};
+Button button_increase = {14, "/increase-qty/LED"};
+const uint8_t LED_indicator = 13;
 
 int flag = 0;
 
@@ -52,11 +51,11 @@ void setup()
   #ifdef DEBUG_MODE
     Serial.begin(115200);
   #endif
-    
+    pinMode(LED_indicator, OUTPUT);
     pinMode(button_decrease.PIN, INPUT_PULLUP);
-    attachInterruptArg(button_decrease.PIN, isr, url_d27, FALLING);
+    attachInterruptArg(button_decrease.PIN, isr, button_decrease.url, FALLING);
     pinMode(button_increase.PIN, INPUT_PULLUP);
-    attachInterruptArg(button_increase.PIN, isr, url_d14, FALLING);
+    attachInterruptArg(button_increase.PIN, isr, button_increase.url, FALLING);
     
     delay(10);
 
@@ -88,7 +87,14 @@ int value = 0;
 
 void loop()
 {
+  if(flag == 0){
+    digitalWrite(13, HIGH); 
+    delay(1000);            
+    digitalWrite(13, LOW);  
+    delay(1000);            
+  }
   if(flag == 1){
+    digitalWrite(13, HIGH); 
 #ifdef DEBUG_MODE
     Serial.print("connecting to ");
     Serial.println(host);
@@ -137,5 +143,7 @@ void loop()
     Serial.println();
 #endif
     flag = 0;
+    delay(2000);       
+    digitalWrite(13, LOW);  
   }
 }

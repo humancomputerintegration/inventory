@@ -19,13 +19,10 @@
             <div class="card-body">
                 <div class="card mb-4">
                     <div class="card-header">New Product</div>
-                    <div class="card-body">
-                        <form action="/products/" method="POST" id="product_search_form"></form>
-                            <input type="text" name="search_input" id= "search_info" placeholder="Search..">
-                            <input id="search" value="search" class="btn btn-primary">
+                    <div class="card-body">                           
                         <form action="/products/" method="POST" id="product_form">
                             <label for="product_name" class="col-form-label">Product Name</label>
-                            <input type="text" name="product_name" id="product_name"><br>
+                            <input type="text" name="product_name" id="product_name">
                             
                             <label for="product_info" class="col-form-label">Info</label>
                             <input type="text" name="product_info" id="product_info">
@@ -38,6 +35,9 @@
 
                             <label for="order_url" class="col-form-label">Order URL</label>
                             <input type="text" name="order_url" id="order_url">
+
+                            <input type="checkbox" id="automatic_ordering" name="automatic_ordering" value="automatic_ordering">
+                            <label for="automatic_ordering"> autmomatically order </label><br>
 
                             <input id="submitProduct" value="Add Product" class="btn btn-primary">
                         </form>
@@ -60,6 +60,9 @@
                                     <th>Info</th>
                                     <th>Quantity</th>
                                     <th>Date</th>
+                                    <th>Trigger_qty</th>
+                                    <th>Order_url</th>
+                                    <th>automatic ordering</th>
                                     <th>Actions</th>
                                 </tr>
                             </thead>
@@ -69,6 +72,9 @@
                                     <th>Info</th>
                                     <th>Quantity</th>
                                     <th>Date</th>
+                                    <th>Trigger_qty</th>
+                                    <th>Order_url</th>
+                                    <th>automatic ordering</th>
                                     <th>Actions</th>
                                 </tr>
                             </tfoot>
@@ -78,17 +84,27 @@
                                     <td>{{ product.product_id }}</td>
                                     <td>{{ product.product_info }}</td>
                                     <td>
-					{{ product.product_qty }}<br>
-                                        <a href="/increase-qty/{{ product.product_id }}">+</a> /
-                                        <a href="/decrease-qty/{{ product.product_id }}">-</a>
+                                        <div class="card-body">
+                                            <form action="/update-qty/{{ product.product_id }}" method="POST" id="update_qty">
+                                                <input class="form-control" name="update_qty" id="update_qty" type="number" placeholder={{ product.product_qty }} />
+                                                <input id="submitUpdate_qty" value="Save" class="btn btn-primary">
+                                            </form>
+                                    </div>
 				    </td>
                                     <td>{{ product.date_created.date() }}</td>
+                                    <td>{{ product.order_trigger_qty }}</td>
+                                    <td>{{ product.order_url }}</td>
+                                    {% if products.automatic_ordering == "Yes" %}
+                                    <td>YES</td>
+                                    {% else %}
+                                    <td>No</td>
                                     <td>
                                         <a href="/delete-product/{{ product.product_id }}">Delete</a>
                                         <br>
                                         <a href="/update-product/{{ product.product_id }}">Update</a>  
                                     </td>
                                 </tr>
+                                {% endif %}
                                 {% endfor %}
                             </tbody>
                         </table>

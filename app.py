@@ -1,4 +1,12 @@
 import subprocess
+from email.mime.text import MIMEText
+from email.mime.image import MIMEImage
+from email.mime.application import MIMEApplication
+from email.mime.multipart import MIMEMultipart
+import smtplib
+import os
+
+
 from flask import Flask, render_template, url_for, request, redirect
 from flask_sqlalchemy import SQLAlchemy
 from collections import defaultdict
@@ -17,6 +25,7 @@ class Product(db.Model):
     product_qty  = db.Column(db.Integer)
     order_trigger_qty = db.Column(db.Integer)
     order_url = db.Column(db.String(100000))
+    automatic_ordering = db.Column(db.String(10))
 
 
 
@@ -105,7 +114,8 @@ def viewProduct():
         product_qty   = request.form["product_qty"]
         order_trigger_qty   = request.form["order_trigger_qty"]
         order_url  = request.form["order_url"]
-        new_product = Product(product_id=product_name, product_info=product_info, product_qty=product_qty, order_trigger_qty = order_trigger_qty, order_url=order_url)
+        automatic_ordering = request.form["automatic_ordering"]
+        new_product = Product(product_id=product_name, product_info=product_info, product_qty=product_qty, order_trigger_qty = order_trigger_qty, order_url=order_url, automatic_ordering=automatic_ordering)
 
         try:
             db.session.add(new_product)
@@ -179,7 +189,22 @@ def increaseQty(name):
     except:
         return "There was an issue while decreasing the quantity"
 
+@app.route("/update-qty/<name>", methods=["POST"])
+def updateQty(name):
+    product_update = Product.query.get_or_404(name)
+    old_qty = product_update.product_qty
 
+    if request.method == "POST":
+        product_update.product_qty = request.form['update_qty']
+
+        try:
+            db.session.commit()
+            return redirect("/products/")
+
+        except:
+            return "There was an issue while updating the quantity"
+    else:
+        return render_template("products.html", product=product_update)
 
 @app.route("/update-location/<name>", methods=["POST", "GET"])
 def updateLocation(name):

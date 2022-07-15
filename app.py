@@ -114,7 +114,14 @@ def viewProduct():
         product_qty   = request.form["product_qty"]
         order_trigger_qty   = request.form["order_trigger_qty"]
         order_url  = request.form["order_url"]
-        automatic_ordering = request.form["automatic_ordering"]
+        automatic_ordering = "not set"
+        if request.form["automatic_ordering"] is None or request.form["automatic_ordering"] == "None" :    
+            automatic_ordering = "off"
+        else:
+            automatic_ordering = "on"
+        #automatic_ordering = request.form["automatic_ordering"]
+
+        print(automatic_ordering)
         new_product = Product(product_id=product_name, product_info=product_info, product_qty=product_qty, order_trigger_qty = order_trigger_qty, order_url=order_url, automatic_ordering=automatic_ordering)
 
         try:
@@ -166,8 +173,9 @@ def decreaseQty(name):
     if product_to_decrease.product_qty <= 0:
         product_to_decrease.product_qty = 0
     if product_to_decrease.product_qty <= product_to_decrease.order_trigger_qty:
-        subprocess.Popen(["open", product_to_decrease.order_url])
-
+        argument = "Hey Pedro, Can you please order " + product_to_decrease.product_id + "from " + product_to_decrease.order_url + "Thanks! | mail -s \"Test Postfix\" pedrolopes@uchicago.edu"
+        subprocess.Popen(["echo",  argument])
+        subprocess.Popen(["open",  "htpps://google.com" + argument])
     try:
         #db.session.update(product_to_decrease)
         db.session.commit()
@@ -189,10 +197,11 @@ def increaseQty(name):
     except:
         return "There was an issue while decreasing the quantity"
 
-@app.route("/update-qty/<name>", methods=["POST"])
+@app.route("/update-qty/<name>", methods=["POST", "GET"])
 def updateQty(name):
     product_update = Product.query.get_or_404(name)
     old_qty = product_update.product_qty
+    product_update.product_qty = request.form['update_qty']
 
     if request.method == "POST":
         product_update.product_qty = request.form['update_qty']

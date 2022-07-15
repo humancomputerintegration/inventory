@@ -5,14 +5,21 @@
 
 #include <Arduino.h>
 #include <WiFi.h>
+#include <Ticker.h>
 #define DEBUG_MODE
 
 const char* ssid     = "hci";       //"your-ssid";
 const char* password = "mpffmpff";  //"your-password";
 
-const char* host = "192.168.0.109";
-const int httpPort = 5000;
+//const char* host = "192.168.0.109";
+const char* host = "inventory.plopes.org";
+const int httpPort = 80;
 char* url;
+
+Ticker blinker;
+Ticker toggler;
+float blinkerPace = 0.1;  //seconds //speed of blinking while send GET to the server
+float togglePeriod = 5.0; //seconds //period of blinking to show it alive
 
 // Use WiFiClient class to create TCP connections
 WiFiClient client;
@@ -25,8 +32,8 @@ struct Button {
 Button button_decrease = {27, "/decrease-qty/LED"};
 Button button_increase = {14, "/increase-qty/LED"};
 const uint8_t LED_indicator = 13;
-
 int flag = 0;
+
 
 void ARDUINO_ISR_ATTR isr(void* arg_url) {
   
@@ -38,6 +45,25 @@ void ARDUINO_ISR_ATTR isr(void* arg_url) {
     else return;
 }
 
+
+void led_blink()
+{
+  digitalWrite(LED_indicator, !digitalRead(LED_indicator));
+}
+
+void led_alive()
+{
+  digitalWrite(LED_indicator, HIGH);
+  delay(100);
+  digitalWrite(LED_indicator, LOW);
+  delay(100);
+  digitalWrite(LED_indicator, HIGH);
+  delay(100);
+  digitalWrite(LED_indicator, LOW);
+  delay(100);
+}
+
+
 void debug_print(char* str){
 #ifdef DEBUG_MODE
   Serial.print(str);
@@ -48,53 +74,52 @@ void debug_print(char* str){
 
 void setup()
 {
-  #ifdef DEBUG_MODE
-    Serial.begin(115200);
-  #endif
-    pinMode(LED_indicator, OUTPUT);
-    pinMode(button_decrease.PIN, INPUT_PULLUP);
-    attachInterruptArg(button_decrease.PIN, isr, button_decrease.url, FALLING);
-    pinMode(button_increase.PIN, INPUT_PULLUP);
-    attachInterruptArg(button_increase.PIN, isr, button_increase.url, FALLING);
-    
-    delay(10);
-
-    // We start by connecting to a WiFi network
 #ifdef DEBUG_MODE
-    Serial.println();
-    Serial.println();
-    Serial.print("Connecting to ");
-    Serial.println(ssid);
+  Serial.begin(115200);
 #endif
-    WiFi.begin(ssid, password);
+  pinMode(LED_indicator, OUTPUT);
+  blinker.attach(togglePeriod, led_alive);
+  pinMode(button_decrease.PIN, INPUT_PULLUP);
+  attachInterruptArg(button_decrease.PIN, isr, button_decrease.url, FALLING);
+  pinMode(button_increase.PIN, INPUT_PULLUP);
+  attachInterruptArg(button_increase.PIN, isr, button_increase.url, FALLING);
+  
+  delay(10);
 
-    while (WiFi.status() != WL_CONNECTED) {
-        delay(500);
+  // We start by connecting to a WiFi network
 #ifdef DEBUG_MODE
-        Serial.print(".");
+  Serial.println();
+  Serial.println();
+  Serial.print("Connecting to ");
+  Serial.println(ssid);
 #endif
-    }
+  WiFi.begin(ssid, password);
+
+  while (WiFi.status() != WL_CONNECTED) {
+      delay(500);
+#ifdef DEBUG_MODE
+      Serial.print(".");
+#endif
+  }
 
 #ifdef DEBUG_MODE
-    Serial.println("");
-    Serial.println("WiFi connected");
-    Serial.println("IP address: ");
-    Serial.println(WiFi.localIP());
+  Serial.println("");
+  Serial.println("WiFi connected");
+  Serial.println("IP address: ");
+  Serial.println(WiFi.localIP());
 #endif
 }
 
 int value = 0;
 
 void loop()
-{
-  if(flag == 0){
-    digitalWrite(13, HIGH); 
-    delay(1000);            
-    digitalWrite(13, LOW);  
-    delay(1000);            
-  }
+{  
   if(flag == 1){
-    digitalWrite(13, HIGH); 
+    //digitalWrite(13, HIGH); 
+    
+    blinker.detach();
+    blinker.attach(blinkerPace, led_blink);
+    blinkerPace = 0.05;
 #ifdef DEBUG_MODE
     Serial.print("connecting to ");
     Serial.println(host);
@@ -143,7 +168,10 @@ void loop()
     Serial.println();
 #endif
     flag = 0;
-    delay(2000);       
-    digitalWrite(13, LOW);  
+    
+    delay(1000);       
+    blinker.detach();
+    digitalWrite(LED_indicator, LOW);
+    blinker.attach(togglePeriod, led_alive);
   }
 }
